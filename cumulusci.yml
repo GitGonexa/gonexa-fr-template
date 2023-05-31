@@ -1,0 +1,80 @@
+minimum_cumulusci_version: '3.75.1'
+project:
+    name: gonexa-fr-template
+    package:
+        name: gonexa-fr-template
+        api_version: '55.0'
+    dependencies:
+        - version_id: 04t8Z000000ZPZ9QAO
+        - github: 'https://github.com/SalesforceFoundation/NPSP'
+    git:
+        default_branch: 'main'
+        repo_url: https://github.com/GitGonexa/gonexa-fr-template
+    source_format: sfdx
+
+tasks:
+    robot:
+        options:
+            suites: robot/gonexa-fr-template/tests
+            options:
+                outputdir: robot/gonexa-fr-template/results
+
+    robot_testdoc:
+        options:
+            path: robot/gonexa-fr-template/tests
+            output: robot/gonexa-fr-template/doc/gonexa-fr-template_tests.html
+
+    run_tests:
+        options:
+            required_org_code_coverage_percent: 75
+
+    gonexa_setup_permissions_rf_admin:
+        description: 'Runs Anonymous Apex to add admin permissions to current users'
+        group: Gonexa
+        class_path: cumulusci.tasks.apex.anon.AnonymousApexTask
+        options:
+            path: scripts/apex/gonexa_permissions.apex
+            apex: assignPermissionSetForRfAdmin();
+    
+    gonexa_setup_content_document:
+        description: 'Runs Anonymous Apex to add admin permissions to current users'
+        group: Gonexa
+        class_path: cumulusci.tasks.apex.anon.AnonymousApexTask
+        options:
+            path: scripts/apex/gonexa_data.apex
+            apex: setupContentDocument();
+
+    gonexa_deploy_unpackaged: 
+        description: 'Deploy unpackaged metadata to org'
+        group : Gonexa
+        class_path: cumulusci.tasks.salesforce.Deploy
+        options:
+            path: 'force-app/'
+    gonexa_delete_static_resource: 
+        description: 'Deploy unpackaged metadata to org'
+        group : Gonexa
+        class_path: cumulusci.tasks.sfdx.SFDXOrgTask
+        options:
+            command : 'force:source:deploy -x scripts/destructiveChanges.xml --postdestructivechanges scripts/destructiveChanges.xml'
+    
+
+flows:
+    configure_gonexa_prod:
+        steps:
+            1:
+                task: update_dependencies
+            
+    configure_gonexa_scratch:
+        steps:
+            1:
+                task: update_dependencies
+            2:
+                task: gonexa_setup_permissions_rf_admin
+            3:
+                task: gonexa_deploy_unpackaged
+            4:
+                task: load_sample_data
+            5: 
+                task: gonexa_setup_content_document 
+            6: 
+                task: gonexa_delete_static_resource 

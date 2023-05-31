@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Modele_don_organisme_particuliers</members>
+        <members>Modele_de_don_pour_les_entreprises</members>
+        <members>Templates_Gonexa_RF_Particuliers</members>
+        <name>StaticResource</name>
+    </types>
+    <version>57.0</version> 
+</Package>
