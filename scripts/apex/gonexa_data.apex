@@ -9,21 +9,33 @@ public static void setupContentDocument(){
     List<ContentVersion> versions = createContentVersionsWithStaticResources(resources);
     List<string> versionsIds = getIdsFromObject(versions);
     versions = [Select id , Title , ContentDocumentId from ContentVersion where id in :versionsIds];
-    List<gnx__Document_template__c> templates = [Select Id , Name from gnx__Document_template__c where Name in :mapResourceNameTemplateName.values()];
+    List<gnx__Document_template__c> templates = [Select Id , Name , gnx__Salesforce_content_version_id_sent__c from gnx__Document_template__c where Name in :mapResourceNameTemplateName.values()];
 
     List<ContentDocumentLink> links = new List<ContentDocumentLink>();
 
+    List<gnx__Document_template__c> templatesToUpdate = new List<gnx__Document_template__c>();
+
     for(string resourceName : mapResourceNameTemplateName.keySet()){
+        gnx__Document_template__c tmp = getTemplateByName(templates,mapResourceNameTemplateName.get(resourceName));
+        ContentVersion currentVersion = getContentVersionByName(versions,resourceName);
         links.add( 
             new ContentDocumentLink(
-                ContentDocumentId = getContentDocumentIdByContentVersionName(versions,resourceName),
-                LinkedEntityId = getTemplateIdByName(templates,mapResourceNameTemplateName.get(resourceName)),
+                ContentDocumentId = currentVersion.ContentDocumentId,
+                LinkedEntityId = tmp.Id,
                 ShareType = 'I',
                 Visibility = 'AllUsers'
             )
         );
+        tmp.gnx__Salesforce_content_version_id_sent__c = currentVersion.Id;
+        templatesToUpdate.add(tmp);
     }
+    update templatesToUpdate;
     insert links;
+
+    List<Id> docIds = getIdsFromObject(templates);
+   
+    gnx.QueueablePostTemplates queueableTemplates = new gnx.QueueablePostTemplates(versionsIds,docIds);
+    System.enqueueJob(queueableTemplates);
 }
 
 
@@ -41,27 +53,27 @@ private static List<ContentVersion> createContentVersionsWithStaticResources(Lis
     return versions;
 }
 
-private static List<string> getIdsFromObject(List<SObject> objs){
-    List<String> ids = new List<String>();
+private static List<Id> getIdsFromObject(List<SObject> objs){
+    List<Id> ids = new List<Id>();
     for(SObject currentObj : objs){
         ids.add(currentObj.Id);
     }
     return ids;
 }
 
-private static string getTemplateIdByName(List<gnx__Document_template__c> templates,string templateName){
+private static gnx__Document_template__c getTemplateByName(List<gnx__Document_template__c> templates,string templateName){
     for(gnx__Document_template__c template : templates){
         if(template.Name == templateName){
-            return template.Id;
+            return template;
         } 
     }
     return null;
 }
 
-private static string getContentDocumentIdByContentVersionName(List<ContentVersion> versions ,string versionName){
+private static ContentVersion getContentVersionByName(List<ContentVersion> versions ,string versionName){
     for(ContentVersion version : versions){
         if(version.Title == versionName){
-            return version.ContentDocumentId;
+            return version;
         } 
     }
     return null;

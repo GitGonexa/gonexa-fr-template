@@ -3,9 +3,9 @@ project:
     name: gonexa-fr-template
     package:
         name: gonexa-fr-template
-        api_version: '55.0'
+        api_version: '57.0'
     dependencies:
-        - version_id: 04t8Z000000ZPZ9QAO
+        - version_id: 04t8Z000000ZPgVQAW
         - github: 'https://github.com/SalesforceFoundation/NPSP'
     git:
         default_branch: 'main'
@@ -31,10 +31,9 @@ tasks:
     gonexa_setup_permissions_rf_admin:
         description: 'Runs Anonymous Apex to add admin permissions to current users'
         group: Gonexa
-        class_path: cumulusci.tasks.apex.anon.AnonymousApexTask
+        class_path: cumulusci.tasks.salesforce.users.permsets.AssignPermissionSets
         options:
-            path: scripts/apex/gonexa_permissions.apex
-            apex: assignPermissionSetForRfAdmin();
+            api_names: 'ExaDoc_admin_permission_sets,Gonexa_RF_Admin_permission_sets'
     
     gonexa_setup_content_document:
         description: 'Runs Anonymous Apex to add admin permissions to current users'
