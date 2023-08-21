@@ -5,10 +5,9 @@ project:
         name: gonexa-fr-template
         api_version: '57.0'
     dependencies:
-        - version_id: 04t8Z000000ZPgVQAW
-        - github: 'https://github.com/SalesforceFoundation/NPSP'
+        - version_id: 04t8Z000000QjSsQAK
     git:
-        default_branch: 'main'
+        default_branch: 'master'
         repo_url: https://github.com/GitGonexa/gonexa-fr-template
     source_format: sfdx
 
@@ -27,6 +26,13 @@ tasks:
     run_tests:
         options:
             required_org_code_coverage_percent: 75
+
+    gonexa_setup_permission_doc_admin:
+        description: 'Runs Anonymous Apex to add admin permissions to current users'
+        group: Gonexa
+        class_path: cumulusci.tasks.salesforce.users.permsets.AssignPermissionSets
+        options:
+            api_names: 'ExaDoc_admin_permission_sets'
 
     gonexa_setup_permissions_rf_admin:
         description: 'Runs Anonymous Apex to add admin permissions to current users'
@@ -48,32 +54,43 @@ tasks:
         group : Gonexa
         class_path: cumulusci.tasks.salesforce.Deploy
         options:
-            path: 'force-app/'
+            path: 'unpackaged/'
     gonexa_delete_static_resource: 
         description: 'Deploy unpackaged metadata to org'
         group : Gonexa
         class_path: cumulusci.tasks.sfdx.SFDXOrgTask
         options:
             command : 'force:source:deploy -x scripts/destructiveChanges.xml --postdestructivechanges scripts/destructiveChanges.xml'
-    
+    gonexa_deploy_named_credential_test:
+        description: 'Deploy unpackaged metadata to org'
+        group : Gonexa
+        class_path: cumulusci.tasks.salesforce.Deploy
+        options:
+            path: 'force-app/'
 
 flows:
     configure_gonexa_prod:
         steps:
             1:
                 task: update_dependencies
-            
+
     configure_gonexa_scratch:
-        steps:
+         steps:
             1:
                 task: update_dependencies
-            2:
+            2: 
+                task: gonexa_deploy_named_credential_test
+
+            
+    integrate_gonexa_rf_scratch:
+        steps:
+            1:
                 task: gonexa_setup_permissions_rf_admin
-            3:
+            2:
                 task: gonexa_deploy_unpackaged
-            4:
+            3:
                 task: load_sample_data
-            5: 
+            4: 
                 task: gonexa_setup_content_document 
-            6: 
+            5: 
                 task: gonexa_delete_static_resource 

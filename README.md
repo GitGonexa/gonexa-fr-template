@@ -1,18 +1,16 @@
-# Salesforce DX Project: Next Steps
+# Integration Gonexa Doc - Cumulus
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
 
-## How Do You Plan to Deploy Your Changes?
+## Utilisation de Gonexa Doc
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+Pour que l'application Gonexa Doc puisse être intégrée dans une organisation salesforce  , il suffit d'ajouter un identifiant nommé "Gonexa_Doc" avec :
 
-## Configure Your Salesforce DX Project
+- "https://api.exadoc-test.gonexa.fr" pour les scratchs et dev org 
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+- "https://api.exadoc.gonexa.fr" pour les productions avec une action manuelle à effectuer pour ajouter un jeton de securité (https://aide.gonexa.fr/s/article/Mise-en-place-Token-securite?language=fr)
 
-## Read All About It
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+## Utilisation de Gonexa RF
+
+L'intégration de Gonexa RF se fait en 80/20 via les métadonnées situées dans le dossier unpackaged. Un flow d'exemple permet l'intégration de ces sources (le flow "integrate_gonexa_rf_scratch") 
+
