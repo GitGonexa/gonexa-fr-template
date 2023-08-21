@@ -48,13 +48,20 @@ tasks:
         options:
             path: scripts/apex/gonexa_data.apex
             apex: setupContentDocument();
+    gonexa_deploy_unpackaged_models: 
+        description: 'Deploy unpackaged metadata to org'
+        group : Gonexa
+        class_path: cumulusci.tasks.salesforce.Deploy
+        options:
+            path: 'unpackaged/models'
 
     gonexa_deploy_unpackaged: 
         description: 'Deploy unpackaged metadata to org'
         group : Gonexa
         class_path: cumulusci.tasks.salesforce.Deploy
         options:
-            path: 'unpackaged/'
+            path: 'unpackaged/standard'
+
     gonexa_delete_static_resource: 
         description: 'Deploy unpackaged metadata to org'
         group : Gonexa
@@ -91,6 +98,13 @@ flows:
             3:
                 task: load_sample_data
             4: 
-                task: gonexa_setup_content_document 
-            5: 
-                task: gonexa_delete_static_resource 
+                flow: setup_model 
+    
+    setup_model:
+        steps:
+            1:
+                task: gonexa_deploy_unpackaged_models
+            2:
+                task: gonexa_setup_content_document
+            3:
+                task: gonexa_delete_static_resource
